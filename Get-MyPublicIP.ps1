@@ -1,7 +1,7 @@
 
 <#PSScriptInfo
 
-.VERSION 1.0
+.VERSION 1.1
 
 .GUID 5ee7c561-595b-4a10-9d92-171f1a3e5273
 
@@ -33,9 +33,12 @@
 <# 
 
 .DESCRIPTION 
- Get Your Public IP
+ Shows your public ip and copies it to clipbord(with -Copy switch), So you can paste it anywhere you want.
 
  Credit: https://gallery.technet.microsoft.com/scriptcenter/Get-ExternalPublic-IP-c1b601bb
+
+.PARAMETER Copy
+Copy your public ip to clipboard. So you can "CTRL+V" your ip to whereever you want
 
 .PARAMETER Hostname
 Adds hostname information to the output
@@ -67,16 +70,20 @@ Get-MyPublicIP -Hostname
 .EXAMPLE
 Get-MyPublicIP -Hostname -Zip -City
 
+.EXAMPLE
+Get-MyPublicIP -Hostname -Zip -City -Copy
+
 #> 
 
 param(
-        [switch] $HostName,
-        [switch] $City,
-        [switch] $Region,
-        [switch] $Country,
-        [switch] $Location,
-        [switch] $Organization,
-        [switch] $Zip
+    [switch] $Copy,
+    [switch] $HostName,
+    [switch] $City,
+    [switch] $Region,
+    [switch] $Country,
+    [switch] $Location,
+    [switch] $Organization,
+    [switch] $Zip
 )
 $IpInfo = Invoke-RestMethod http://ipinfo.io/json 
     
@@ -110,6 +117,11 @@ if($Organization) {
 
 if($Zip) {
     $IpOutput | Add-Member -NotePropertyName "Zip" -NotePropertyValue $IpInfo.postal
+}
+
+if($Copy) {
+    $null = [Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+    [Windows.Forms.Clipboard]::SetText($IpInfo.ip) 
 }
   
 Write-Output $IpOutput
