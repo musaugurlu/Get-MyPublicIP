@@ -40,4 +40,4 @@ Adds postal code information to the output
 `Get-MyPublicIP -Hostname -Zip -City`
 
 ## EXAMPLE
-Get-MyPublicIP -Hostname -Zip -City -Copy
+`Get-MyPublicIP -Hostname -Zip -City -Copy`
