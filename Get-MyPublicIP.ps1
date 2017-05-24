@@ -33,12 +33,9 @@
 <# 
 
 .DESCRIPTION 
- Shows your public ip and copies it to clipbord(with -Copy switch), So you can paste it anywhere you want.
+ Shows your public ip and copies it to clipbord, So you can paste it anywhere you want.
 
  Credit: https://gallery.technet.microsoft.com/scriptcenter/Get-ExternalPublic-IP-c1b601bb
-
-.PARAMETER Copy
-Copy your public ip to clipboard. So you can "CTRL+V" your ip to whereever you want
 
 .PARAMETER Hostname
 Adds hostname information to the output
@@ -70,13 +67,9 @@ Get-MyPublicIP -Hostname
 .EXAMPLE
 Get-MyPublicIP -Hostname -Zip -City
 
-.EXAMPLE
-Get-MyPublicIP -Hostname -Zip -City -Copy
-
 #> 
 
 param(
-    [switch] $Copy,
     [switch] $HostName,
     [switch] $City,
     [switch] $Region,
@@ -90,6 +83,10 @@ $IpInfo = Invoke-RestMethod http://ipinfo.io/json
 $IpOutput = New-Object -TypeName psobject
     
 $IpOutput | Add-Member -NotePropertyName "IP" -NotePropertyValue $IpInfo.ip
+
+# Copy IP to Clipboard
+$null = [Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+[Windows.Forms.Clipboard]::SetText($IpInfo.ip)
 
 if($HostName) {
     $IpOutput | Add-Member -NotePropertyName "HostName" -NotePropertyValue $IpInfo.hostname    
@@ -117,11 +114,6 @@ if($Organization) {
 
 if($Zip) {
     $IpOutput | Add-Member -NotePropertyName "Zip" -NotePropertyValue $IpInfo.postal
-}
-
-if($Copy) {
-    $null = [Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
-    [Windows.Forms.Clipboard]::SetText($IpInfo.ip) 
 }
   
 Write-Output $IpOutput
